@@ -1,0 +1,5 @@
+#  pip freeze    (para ver librerías instaladas)
+#
+#  pip install -r requerimientos.txt > requerimientos.log        (instala dependencias, displays a fichero.log)
+
+Flask
