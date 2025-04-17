@@ -4,5 +4,7 @@
 
 Flask
 Flask-login
+Flask-sqlalchemy
 Flask-WTF
 email-validator
+python-slugify
