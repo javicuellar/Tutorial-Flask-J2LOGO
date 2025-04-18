@@ -8,3 +8,4 @@ Flask-sqlalchemy
 Flask-WTF
 email-validator
 python-slugify
+python-dotenv
