@@ -5,6 +5,7 @@
 Flask
 Flask-login
 Flask-sqlalchemy
+Flask-migrate
 Flask-WTF
 email-validator
 python-slugify

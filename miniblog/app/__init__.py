@@ -3,17 +3,19 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import SMTPHandler
+from flask_migrate import Migrate
 
 
 login_manager = LoginManager()
 db = SQLAlchemy()
+migrate = Migrate()  # Se crea un objeto de tipo Migrate
 
 
 
 
-def create_app(settings_module='config.DevelopmentConfig'):
+def create_app(config):
     app = Flask(__name__)
-    app.config.from_object(settings_module)
+    app.config.from_object(config)
     # ❗️El método from_object solo tendrá en cuenta aquellas claves que encuentre en MAYÚSCULAS.
 
     configure_logging(app)
@@ -22,6 +24,7 @@ def create_app(settings_module='config.DevelopmentConfig'):
     login_manager.login_view = "auth.login"
 
     db.init_app(app)
+    migrate.init_app(app, db)       # Se inicializa el objeto migrate
 
     # Registro de los Blueprints
     from .auth import auth_bp
