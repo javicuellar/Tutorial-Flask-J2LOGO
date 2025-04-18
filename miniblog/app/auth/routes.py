@@ -49,7 +49,10 @@ def show_signup_form():
 def login():
     if current_user.is_authenticated:
         print("autenticado: ", current_user)
-        return redirect(url_for('public.index'))
+        if current_user.is_admin:
+            return redirect(url_for('admin.list_posts'))
+        else:
+            return redirect(url_for('public.index'))
     
     form = LoginForm()
     if form.validate_on_submit():
@@ -62,7 +65,10 @@ def login():
             print("url_parse -> ", next_page)
             if not next_page or urlparse(next_page).netloc != '':
                 print("no next_page o urlparse")
-                next_page = url_for('public.index')                
+                if current_user.is_admin:
+                    next_page = url_for('admin.list_posts')
+                else:
+                    next_page = url_for('public.index')                
             return redirect(next_page)
     
     return render_template('auth/login_form.html', form=form)
