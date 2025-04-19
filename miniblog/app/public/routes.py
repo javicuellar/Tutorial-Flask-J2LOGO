@@ -11,9 +11,27 @@ import logging
 logger = logging.getLogger(__name__)        # su nombre es el del módulo
 
 
+from flask_mail import Message
+from app import mail
+
+
+
 
 @public_bp.route("/")
 def index():
+    # Añadimos código para avisar que visitan la aplicación
+    # El envío se hace de forma sincrona (esparamos hasta que se envía)
+    msg = Message("Hola",
+              sender="from@example.com",
+              recipients=["javicu25@gmail.com"])
+
+    msg.body = 'Bienvenid@ a j2logo'
+    msg.html = '<p>Bienvenid@ a <strong>j2logo</strong></p>'
+
+    mail.send(msg)
+    # Se envía un mensaje asincrono al registrase (auth.routes)
+    
+
     current_app.logger.error('Mostrando los posts del blog')
     logger.info('Mostrando los posts del blog (más detalle del módulo)')
     # posts = Post.all_paginated(2, 3)

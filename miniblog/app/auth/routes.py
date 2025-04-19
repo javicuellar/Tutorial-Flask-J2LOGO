@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, current_app
 from flask_login import current_user, login_user, logout_user
 # from werkzeug.urls import url_parse
 from urllib.parse import urlparse
@@ -7,6 +7,8 @@ from app import login_manager
 from . import auth_bp
 from .forms import SignupForm, LoginForm
 from .models import User
+
+from app.common.mail import send_email      # envío mail asíncrono
 
 
 
@@ -32,6 +34,14 @@ def show_signup_form():
             user = User(name=name, email=email)
             user.set_password(password)
             user.save()
+
+            # Enviamos un email de bienvenida
+            send_email(subject = f'Bienvenid@ al miniblog - se ha registrado: {email}',
+                       sender = current_app.config['DONT_REPLY_FROM_EMAIL'],
+                       # recipients= [email, ],
+                       recipients = current_app.config['ADMINS'],    # en lugar de enviar el correo al nuevo usuario, me lo envío a mi
+                       text_body = f'Hola {name}, bienvenid@ al miniblog de Flask',
+                       html_body = f'<p>Hola <strong>{name}</strong>, bienvenid@ al miniblog de Flask</p>')
             
             # Dejamos al usuario logueado
             login_user(user, remember=True)
