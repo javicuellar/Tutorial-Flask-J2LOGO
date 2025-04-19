@@ -1,4 +1,5 @@
-from flask import render_template, redirect, url_for, abort
+import os
+from flask import render_template, redirect, url_for, abort, request, current_app
 from flask_login import login_required, current_user
 from app.auth.decorators import admin_required
 
@@ -39,10 +40,32 @@ def post_form():
         title = form.title.data
         content = form.content.data
         
+        file = form.post_image.data
+        image_name = None           #  añadimos la imagen
+        
+        # Comprueba si la petición contiene la parte del fichero
+        from werkzeug.utils import secure_filename
+
+        # if 'post_image' in request.files:       # versión inicial, sin formulario
+            # file = request.files['post_image']
+            # if file.filename:            
+            # Si el usuario no selecciona un fichero, el navegador
+            # enviará una parte vacía sin nombre de fichero
+            
+        if file:
+            image_name = secure_filename(file.filename)
+            images_dir = current_app.config['POSTS_IMAGES_DIR']
+            os.makedirs(images_dir, exist_ok=True)
+            file_path = os.path.join(images_dir, image_name)
+            file.save(file_path)
+        
         post = Post(user_id=current_user.id, title=title, content=content)
+        post.image_name = image_name            #  añadimos la ruta de la imagen
         post.save()
+        
         logger.info(f'Guardando nuevo post {title}')
         return redirect(url_for('admin.list_posts'))
+    
     return render_template("admin/post_form.html", form=form)
 
 

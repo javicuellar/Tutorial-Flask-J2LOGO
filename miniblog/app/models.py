@@ -15,6 +15,7 @@ class Post(db.Model):
     content     = db.Column(db.Text)
     created     = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     comments    = db.relationship('Comment', backref='post', lazy=True, cascade='all, delete-orphan', order_by='asc(Comment.created)')
+    image_name  = db.Column(db.String)
 
     def __repr__(self):
         return f'<Post {self.title}>'
