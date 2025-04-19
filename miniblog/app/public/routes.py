@@ -1,4 +1,4 @@
-from flask import abort, render_template, redirect, url_for, current_app
+from flask import abort, render_template, redirect, url_for,request, current_app
 from werkzeug.exceptions import NotFound
 from .forms import CommentForm
 from flask_login import current_user
@@ -16,9 +16,18 @@ logger = logging.getLogger(__name__)        # su nombre es el del módulo
 def index():
     current_app.logger.error('Mostrando los posts del blog')
     logger.info('Mostrando los posts del blog (más detalle del módulo)')
-    posts = Post.get_all()
-    return render_template("public/index.html", posts=posts)
+    # posts = Post.all_paginated(2, 3)
+    # return render_template("public/index.html", posts=posts.items)
+    page = int(request.args.get('page', 1))         # recuperamos de la URL la página, 1 por defecto
+    # post_pagination = Post.all_paginated(page, 3)   # 3 elementos por página
 
+    # El número de elementos por página, lo recogemos de los parámetros de configuración, definidos en config.py
+    per_page = current_app.config['ITEMS_PER_PAGE']
+    post_pagination = Post.all_paginated(page, per_page)
+
+    # En lugar de pasar los post, o post.items, pasamos el objeto paginación
+    # modificando index.html para tratarlo
+    return render_template("public/index.html", post_pagination=post_pagination, per_page=per_page)
 
 
 @public_bp.route("/p/<string:slug>/", methods=["GET", "POST"])
