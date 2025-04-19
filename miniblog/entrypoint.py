@@ -1,12 +1,12 @@
 # Este fichero es el punto de entrada a la aplicación. En él se crea la aplicación y se lanza el servidor de desarrollo.
-import os
 from app import create_app
-from instance.config import Config
+from instance.config import Config_des
 
 
 
-app = create_app(Config)
 
+
+app = create_app(Config_des)
 
 
 

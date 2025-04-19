@@ -1,7 +1,7 @@
 from flask import url_for
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
-import datetime
+from datetime import datetime, timezone
 
 from app import db
 
@@ -13,7 +13,7 @@ class Post(db.Model):
     title       = db.Column(db.String(256), nullable=False)
     title_slug  = db.Column(db.String(256), unique=True, nullable=False)
     content     = db.Column(db.Text)
-    created     = db.Column(db.DateTime, default=datetime.timezone.utc)
+    created     = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     comments    = db.relationship('Comment', backref='post', lazy=True, cascade='all, delete-orphan', order_by='asc(Comment.created)')
 
     def __repr__(self):
@@ -32,6 +32,8 @@ class Post(db.Model):
                 db.session.commit()
                 saved = True
             except IntegrityError:
+                db.session.rollback()
+                db.session.add(self)
                 count += 1
                 self.title_slug = f'{slugify(self.title)}-{count}'
 
@@ -63,7 +65,7 @@ class Comment(db.Model):
     user_name = db.Column(db.String)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     content = db.Column(db.Text)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    created = db.Column(db.DateTime, default=datetime.now(timezone.utc))
 
     def __init__(self, content, user_id=None, user_name=user_name, post_id=None):
         self.content = content

@@ -31,7 +31,8 @@ class User(db.Model, UserMixin):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-    
+
+ 
     @staticmethod
     def get_all():
         return User.query.all()
