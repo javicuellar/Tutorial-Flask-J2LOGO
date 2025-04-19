@@ -13,6 +13,12 @@ migrate = Migrate()     # Se crea un objeto de tipo Migrate
 mail = Mail()  # 2. Instanciamos un objeto de tipo Mail
 
 
+# Añadimos un filtro para el formateo de fechas-horas en jinja
+from app.common.filters import format_datetime
+
+def register_filters(app):
+    app.jinja_env.filters['datetime'] = format_datetime
+
 
 
 def create_app(config):
@@ -29,6 +35,9 @@ def create_app(config):
     migrate.init_app(app, db)       # Se inicializa el objeto migrate
     mail.init_app(app)          # 3. Inicializamos el objeto mail
 
+    # Registro de los filtros
+    register_filters(app)
+    
     # Registro de los Blueprints
     from .auth import auth_bp
     app.register_blueprint(auth_bp)
